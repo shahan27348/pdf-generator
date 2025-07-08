@@ -87,7 +87,7 @@ const HeroSection = () => {
             <p className="text-pink-100 mb-6 text-lg">
               Join thousands of professionals who save hours every week with our AI-powered summaries.
             </p>
-            <button className="bg-white text-purple-600 px-8 py-3 rounded-xl font-semibold hover:bg-gray-50 transition-colors">
+            <button   >
               Get Started Free
             </button>
           </div>
