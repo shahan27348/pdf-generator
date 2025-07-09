@@ -1,6 +1,9 @@
 "use client";
 import z from "zod";
 import UploadFormInput from "./uploadforminput";
+import { useUploadThing } from "@/utils/uploadthing";
+import { Description } from "@radix-ui/react-dialog";
+import { title } from "process";
 
 const schema = z.object({
   file: z
@@ -16,7 +19,25 @@ const schema = z.object({
 });
 
 export default function UploadForm() {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const { toast } = useToast();
+
+  const { startUpload, routeConfig } = useUploadThing("pdfUploader", {
+    onClientUploadComplete: () => {
+      console.log("uploaded successfully");
+    },
+    onUploadError: (err) => {
+      console.error("error occur while uploading");
+      toast({
+        title: "Error ocur while uploading",
+        Description: err.message,
+      });
+    },
+    onUploadBegin: ({ file }) => {
+      console.log("upload has begun for", file);
+    },
+  });
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("sbmitted");
     const formData = new FormData(e.currentTarget);
@@ -24,12 +45,33 @@ export default function UploadForm() {
 
     // validating th files
     const validatedFields = schema.safeParse({ file });
-    console.log(validatedFields)
+    console.log(validatedFields);
     if (!validatedFields.success) {
-      console.log(
-        validatedFields.error.flatten().fieldErrors.file?.[0] ?? "Invalid file"
-      );
-      return
+      
+      toast({
+        title: "Something went wrong",
+        variant: "destruction",
+        description:
+          validatedFields.error.flatten().fieldErrors.file?.[0] ??
+          "Invalid file",
+      });
+      return;
+    }
+
+    toast({
+      title: 'Poccessing PDF',
+      Description:'Hang tight! Our AI is reading through your document'
+    })
+
+    // upload the filw to uploading
+    const resp = await startUpload([file]);
+    if (!resp) {
+      toast({
+        title: 'Something went wrong',
+        Description:'Please use a different file',
+        variant: 'destructive',
+      })
+      return;
     }
   };
   return (

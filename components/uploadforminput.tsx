@@ -18,7 +18,7 @@ export default function UploadFormInput({ onSubmit }: UploadFormInputProps) {
           required
           className="text-black border-black w-100"
         />
-        <Button variant="default">Upload Your PDF</Button>
+        <Button variant="default" className="cursor-pointer">Upload Your PDF</Button>
       </div>
     </form>
   );
