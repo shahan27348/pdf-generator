@@ -1,3 +1,4 @@
+"use client"
 // import BgGradient from '@/components/common/bg-gradient';
 import { Badge } from "@/components/ui/badge";
 import UploadForm from "@/components/upload-form";
