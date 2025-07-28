@@ -6,8 +6,8 @@ import HeroSection from "@/components/herosection";
 const TestPage = () => {
   return (
     <div className="h-full p-4 space-y-2">
-      <HeroSection/>
-      <Footer/>
+      <HeroSection />
+      <Footer />
     </div>
   );
 };

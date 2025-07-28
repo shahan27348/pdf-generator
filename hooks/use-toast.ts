@@ -1,18 +1,20 @@
 // src/hooks/use-toast.ts
-'use client';
+"use client";
 
-import { toast as sonnerToast } from 'sonner';
+import { toast as sonnerToast } from "sonner";
 
 type ToastOptions = {
   title: string;
   description?: string;
-  variant?: 'default' | 'destructive';
+  variant?: "default" | "destructive";
 };
 
 export function useToast() {
   return {
-    toast: ({ title, description, variant = 'default' }: ToastOptions) => {
-      sonnerToast[variant === 'destructive' ? 'error' : 'success'](`${title}: ${description ?? ''}`);
+    toast: ({ title, description, variant = "default" }: ToastOptions) => {
+      sonnerToast[variant === "destructive" ? "error" : "success"](
+        `${title}: ${description ?? ""}`
+      );
     },
   };
 }
