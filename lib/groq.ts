@@ -2,7 +2,7 @@ import { SUMMURY_SYSTEM_PROMPT } from "@/utils/prompts";
 import OpenAI from "openai";
 
 const openai = new OpenAI({
-  apiKey: process.env.GROQ_API_KEY || "",
+  apiKey: process.env.GROQ_API_KEY,
   baseURL: "https://api.groq.com/openai/v1",
 });
 

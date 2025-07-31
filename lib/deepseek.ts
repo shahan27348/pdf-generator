@@ -2,7 +2,7 @@ import { SUMMURY_SYSTEM_PROMPT } from "@/utils/prompts";
 import OpenAI from "openai";
 
 const openai = new OpenAI({
-  apiKey: process.env.DEEPSEEK_API_KEY || "sk-e5f9d77fccef423ab8a7346e13a04e78",
+  apiKey: process.env.DEEPSEEK_API_KEY,
   baseURL: "https://api.deepseek.com/v1",
 });
 
