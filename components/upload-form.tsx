@@ -91,29 +91,19 @@ export default function UploadForm() {
 
       //parse the pdf using Langchain
       const result = await generatePdfSummary([resp[0]]);
-      const { data = null, message = null } = result || {};
-      if (data) {
-        let storeResult: any;
-        toast({
-          title: "Saving PDF",
-          description: "Hang tight! We are saving your pdf summary",
-        });
-
-        if (data.summary) {
-          storeResult = await storePdfSummaryAction({
-            userId: resp[0].serverData.userId,
-            summary: data.summary,
-            fileUrl: resp[0].serverData.file.url,
-            title: data.title,
-            fileName: file.name,
-          });
-
+      const { data = null, message = null, success = false } = result || {};
+      if (success && data) {
           toast({
             title: "PDF Summary Saved",
             description: "Your PDF summary has been saved successfully",
           });
           formRef.current?.reset();
-        }
+      } else {
+        toast({
+          title: "Error",
+          description: message || "Failed to save summary.",
+          variant: "destructive",
+        });
       }
     } catch (error: any) {
       setIsLoading(false);

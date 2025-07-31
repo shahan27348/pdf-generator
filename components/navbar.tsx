@@ -41,6 +41,12 @@ const Navbar = () => {
         >
           Your Summary
         </Link>
+        <Link
+          href="/pricing"
+          className="text-gray-600 hover:text-gray-800 transition-colors font-medium"
+        >
+          Pricing
+        </Link>
       </div>
 
       <div className="flex items-center gap-x-3">
@@ -49,6 +55,12 @@ const Navbar = () => {
           className="text-red-500 hover:text-red-600 transition-colors"
         >
           Upload PDF
+        </Link>
+        <Link
+          href="/pricing"
+          className="text-gray-600 hover:text-gray-800 transition-colors font-medium md:hidden"
+        >
+          Pricing
         </Link>
         <ModeToggle />
         <UserButton />

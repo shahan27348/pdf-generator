@@ -2,6 +2,8 @@
 
 import { getDbConnection } from "@/lib/db";
 import { generateSummuryFromGemini } from "@/lib/gemini";
+import { generateSummaryFromDeepSeek } from "@/lib/deepseek";
+import { generateSummaryFromGroq } from "@/lib/groq";
 import { fetchAndExtractPdfText } from "@/lib/langchain";
 import { formatFileNameAsTitle } from "@/utils/format-utils";
 import { auth } from "@clerk/nextjs/server";
@@ -69,14 +71,23 @@ export async function generatePdfSummary(
       summary = await generateSummuryFromGemini(pdfText);
       console.log({ summary });
     } catch (error) {
-      console.log(error);
-    }
-    if (error instanceof Error && error.message === "RATE_LIMIT_EXCEEDED") {
+      console.log("Gemini failed, trying DeepSeek", error);
       try {
-        summary = await generateSummuryFromGemini(pdfText);
-      } catch (geminiError) {
-        console.error("Gemini api failed", geminiError);
-        throw new Error("Gemini API failed with availabe ai providers");
+        summary = await generateSummaryFromDeepSeek(pdfText);
+        console.log({ summary });
+      } catch (deepSeekError) {
+        console.log("DeepSeek failed, trying Groq", deepSeekError);
+        try {
+          summary = await generateSummaryFromGroq(pdfText);
+          console.log({ summary });
+        } catch (groqError) {
+          console.error("Groq api failed", groqError);
+          return {
+            success: false,
+            message: "All LLM APIs failed (Gemini, DeepSeek, Groq)",
+            data: null,
+          };
+        }
       }
     }
     if (!summary) {
@@ -88,9 +99,35 @@ export async function generatePdfSummary(
     }
     const formattedFilName = formatFileNameAsTitle(fileName);
 
+    // Save summary to DB immediately
+    try {
+      const sql = await getDbConnection();
+      const [savedSummary] = await sql`INSERT INTO pdf_summaries (
+        user_id,
+        orignal_file_url,
+        summary_text,
+        title,
+        file_name
+      ) VALUES (
+        ${userId},
+        ${pdfUrl},
+        ${summary},
+        ${formattedFilName},
+        ${fileName}
+      ) RETURNING id, summary_text`;
+      return savedSummary;
+    } catch (dbError) {
+      console.error("Error saving summary to DB", dbError);
+      return {
+        success: false,
+        message: "Summary generated but failed to save to DB",
+        data: null,
+      };
+    }
+
     return {
       success: true,
-      message: "Summury generated successfully",
+      message: "Summary generated and saved successfully",
       data: {
         title: formattedFilName,
         summary,
@@ -99,7 +136,7 @@ export async function generatePdfSummary(
   } catch (err) {
     return {
       success: false,
-      message: "File ipload failed",
+      message: "File upload failed",
       data: null,
     };
   }
